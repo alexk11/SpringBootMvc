@@ -20,12 +20,8 @@ public class PetService implements IPetService {
 
     @Override
     public PetDto getPet(Long id) {
-        final Set<PetDto> petSet = new HashSet<>();
-        this.userService.getUserMap().values().stream()
-                .map(UserDto::getPets)
-                .forEach(petSet::addAll);
-
-        return petSet.stream()
+        return this.getAllPets()
+                .stream()
                 .filter(p -> (long)p.getId() == id)
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException(id, "Pet not found", "Get pet"));
@@ -39,7 +35,7 @@ public class PetService implements IPetService {
                                 .filter(u -> u.getId().compareTo(pet.getUserId()) == 0)
                                 .findFirst()
                                 .orElseThrow(() -> new ResourceNotFoundException(pet.getUserId(), "User not found", "Create pet"));
-        pet.setId((long) (user.getPets().size() + 1));
+        pet.setId((long) (this.getAllPets().size() + 1));
         user.getPets().add(pet);
 
         return pet;
@@ -47,12 +43,13 @@ public class PetService implements IPetService {
 
     @Override
     public Long updatePet(PetDto pet) {
-        this.userService.getUserMap()
-                .values()
-                .stream()
-                .filter(u -> u.getId().compareTo(pet.getUserId()) == 0)
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(pet.getUserId(), "User not found", "Update pet"));
+//        this.userService.getUserMap()
+//                .values()
+//                .stream()
+//                .filter(u -> u.getId().compareTo(pet.getUserId()) == 0)
+//                .findFirst()
+//                .orElseThrow(() -> new ResourceNotFoundException(pet.getUserId(), "User not found", "Update pet"));
+        UserDto userDto = this.getUserById(pet.getUserId(), "Update pet");
 
         PetDto petDto = this.getPet(pet.getId());
         petDto.setName(pet.getName());
@@ -83,6 +80,23 @@ public class PetService implements IPetService {
                     pets.removeIf(pet -> id.compareTo(pet.getId()) == 0);
                 });
         return id;
+    }
+
+    private Set<PetDto> getAllPets() {
+        final Set<PetDto> petSet = new HashSet<>();
+        this.userService.getUserMap().values().stream()
+                .map(UserDto::getPets)
+                .forEach(petSet::addAll);
+        return petSet;
+    }
+
+    private UserDto getUserById(Long id, String operation) {
+        return this.userService.getUserMap()
+                .values()
+                .stream()
+                .filter(u -> u.getId().compareTo(id) == 0)
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException(id, "User not found", operation));
     }
 
 }
