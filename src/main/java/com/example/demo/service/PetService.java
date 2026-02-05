@@ -63,16 +63,26 @@ public class PetService implements IPetService {
 
     @Override
     public Long deletePet(Long id) {
-        PetDto petDto = this.userService.getUserMap()
+        final Set<Long> petIds = new HashSet<>();
+        this.userService.getUserMap().values().stream()
+                .map(UserDto::getPets)
+                .forEach(pets -> {
+                    for (PetDto pet : pets) {
+                        petIds.add(pet.getId());
+                    }
+                });
+
+        if (!petIds.contains(id)) {
+            throw new ResourceNotFoundException(id, "Pet not found", "Delete pet");
+        }
+
+        this.userService.getUserMap()
                 .values()
                 .forEach(user -> {
                     List<PetDto> pets = user.getPets();
-                    for (PetDto pet : pets) {
-                        if (id.compareTo(pet.getId()) == 0) {
-                            return pet;
-                        }
-                    }
+                    pets.removeIf(pet -> id.compareTo(pet.getId()) == 0);
                 });
+        return id;
     }
 
 }
