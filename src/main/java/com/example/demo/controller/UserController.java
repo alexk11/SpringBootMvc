@@ -29,7 +29,7 @@ public class UserController {
     }
 
     @PutMapping(path = "/update")
-    public ResponseEntity<Long> updateUser(@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserDto userDto) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userDto));
     }
 

@@ -6,18 +6,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 
 @AutoConfigureMockMvc
@@ -69,13 +68,10 @@ class UserServiceTest {
                 35,
                 List.of());
 
-        String userJson = objectMapper.writeValueAsString(userDto);
+        this.userService.getUserMap().put(1L, userDto);
 
-        when(userService.getUser(anyLong())).thenReturn(userDto);
-
-        var jsonResponse = mockMvc.perform(get("/users/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(userJson))
+        var jsonResponse = mockMvc.perform(get("/users/{id}", 1L))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()

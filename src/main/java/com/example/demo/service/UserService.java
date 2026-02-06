@@ -31,13 +31,12 @@ public class UserService implements IUserService {
         if (this.userMap.get(dto.getId()) != null) {
             throw new BadRequestException(dto.getId(), "User already exists", "Create user");
         }
-        //Long key = (long) (this.userMap.size() + 1);
         this.userMap.put(dto.getId(), dto);
         return dto;
     }
 
     @Override
-    public Long updateUser(UserDto dto) {
+    public UserDto updateUser(UserDto dto) {
         UserDto user = Optional.ofNullable(this.userMap.get(dto.getId()))
                 .orElseThrow(() -> new ResourceNotFoundException(dto.getId(), "User not found", "Update user"));
         user.setName(dto.getName());
@@ -45,7 +44,7 @@ public class UserService implements IUserService {
         user.setEmail(dto.getEmail());
         user.setPets(dto.getPets());
 
-        return user.getId();
+        return user;
     }
 
     @Override

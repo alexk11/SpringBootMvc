@@ -45,13 +45,13 @@ public class PetService implements IPetService {
         PetDto foundPet = this.getPet(pet.getId());
         // pet owner has changed
         if (foundPet.getUserId().compareTo(pet.getUserId()) != 0) {
-            // remove pet from the previous owner
+            // remove pet from previous owner
             this.userService.getUserMap().values().stream()
                 .filter(u -> u.getId().compareTo(foundPet.getUserId()) == 0)
                 .findFirst()
                 .map(u -> u.getPets().remove(foundPet))
                 .orElseThrow(() -> new ResourceNotFoundException(pet.getUserId(), "Current pet owner not found", "Update pet"));
-            // add pet to the new owner
+            // add pet to new owner
             foundPet.setName(pet.getName());
             foundPet.setUserId(pet.getUserId());
             this.userService.getUserMap().values().stream()
@@ -59,6 +59,9 @@ public class PetService implements IPetService {
                 .findFirst()
                 .map(u -> u.getPets().add(foundPet))
                 .orElseThrow(() -> new ResourceNotFoundException(pet.getUserId(), "New pet owner not found", "Update pet"));
+        } else { // pet owner has not changed
+            foundPet.setName(pet.getName());
+            foundPet.setUserId(pet.getUserId());
         }
         return foundPet.getId();
     }

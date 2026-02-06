@@ -9,7 +9,7 @@ public interface IUserService {
 
     UserDto getUser(Long id);
 
-    Long updateUser(UserDto dto);
+    UserDto updateUser(UserDto dto);
 
     Long deleteUser(Long id);
 }
