@@ -24,7 +24,7 @@ public class PetService implements IPetService {
                 .stream()
                 .filter(p -> (long)p.getId() == id)
                 .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(id, "Pet with not found", "Get pet"));
+                .orElseThrow(() -> new ResourceNotFoundException(id, "Pet not found", "Get pet"));
     }
 
     @Override
@@ -51,7 +51,7 @@ public class PetService implements IPetService {
                 .findFirst()
                 .map(u -> u.getPets().remove(foundPet))
                 .orElseThrow(() -> new ResourceNotFoundException(pet.getUserId(), "Current pet owner not found", "Update pet"));
-            // add pet to the new pet owner
+            // add pet to the new owner
             foundPet.setName(pet.getName());
             foundPet.setUserId(pet.getUserId());
             this.userService.getUserMap().values().stream()
