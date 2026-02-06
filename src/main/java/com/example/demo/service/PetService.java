@@ -24,7 +24,7 @@ public class PetService implements IPetService {
                 .stream()
                 .filter(p -> (long)p.getId() == id)
                 .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(id, "Pet not found", "Get pet"));
+                .orElseThrow(() -> new ResourceNotFoundException(id, "Pet with not found", "Get pet"));
     }
 
     @Override
@@ -37,66 +37,65 @@ public class PetService implements IPetService {
                                 .orElseThrow(() -> new ResourceNotFoundException(pet.getUserId(), "User not found", "Create pet"));
         pet.setId((long) (this.getAllPets().size() + 1));
         user.getPets().add(pet);
-
         return pet;
     }
 
     @Override
     public Long updatePet(PetDto pet) {
-//        this.userService.getUserMap()
-//                .values()
-//                .stream()
-//                .filter(u -> u.getId().compareTo(pet.getUserId()) == 0)
-//                .findFirst()
-//                .orElseThrow(() -> new ResourceNotFoundException(pet.getUserId(), "User not found", "Update pet"));
-        UserDto userDto = this.getUserById(pet.getUserId(), "Update pet");
-
-        PetDto petDto = this.getPet(pet.getId());
-        petDto.setName(pet.getName());
-        petDto.setUserId(pet.getUserId());
-
-        return pet.getId();
+        PetDto foundPet = this.getPet(pet.getId());
+        // pet owner has changed
+        if (foundPet.getUserId().compareTo(pet.getUserId()) != 0) {
+            // remove pet from the previous owner
+            this.userService.getUserMap().values().stream()
+                .filter(u -> u.getId().compareTo(foundPet.getUserId()) == 0)
+                .findFirst()
+                .map(u -> u.getPets().remove(foundPet))
+                .orElseThrow(() -> new ResourceNotFoundException(pet.getUserId(), "Current pet owner not found", "Update pet"));
+            // add pet to the new pet owner
+            foundPet.setName(pet.getName());
+            foundPet.setUserId(pet.getUserId());
+            this.userService.getUserMap().values().stream()
+                .filter(u -> u.getId().compareTo(foundPet.getUserId()) == 0)
+                .findFirst()
+                .map(u -> u.getPets().add(foundPet))
+                .orElseThrow(() -> new ResourceNotFoundException(pet.getUserId(), "New pet owner not found", "Update pet"));
+        }
+        return foundPet.getId();
     }
 
     @Override
     public Long deletePet(Long id) {
+        // collect all pet id
         final Set<Long> petIds = new HashSet<>();
         this.userService.getUserMap().values().stream()
-                .map(UserDto::getPets)
-                .forEach(pets -> {
-                    for (PetDto pet : pets) {
-                        petIds.add(pet.getId());
-                    }
-                });
-
+            .map(UserDto::getPets)
+            .forEach(pets -> {
+                for (PetDto pet : pets) {
+                    petIds.add(pet.getId());
+                }
+            });
+        // raise exception if the pet with id doesn't exist
         if (!petIds.contains(id)) {
             throw new ResourceNotFoundException(id, "Pet not found", "Delete pet");
         }
-
+        // iterate users and remove the pet
         this.userService.getUserMap()
-                .values()
-                .forEach(user -> {
-                    List<PetDto> pets = user.getPets();
-                    pets.removeIf(pet -> id.compareTo(pet.getId()) == 0);
-                });
+            .values()
+            .forEach(user -> {
+                user.getPets().removeIf(pet -> id.compareTo(pet.getId()) == 0);
+            });
         return id;
     }
 
+    /**
+     * Get all Pets from all Users
+     */
     private Set<PetDto> getAllPets() {
         final Set<PetDto> petSet = new HashSet<>();
         this.userService.getUserMap().values().stream()
                 .map(UserDto::getPets)
                 .forEach(petSet::addAll);
         return petSet;
-    }
-
-    private UserDto getUserById(Long id, String operation) {
-        return this.userService.getUserMap()
-                .values()
-                .stream()
-                .filter(u -> u.getId().compareTo(id) == 0)
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(id, "User not found", operation));
     }
 
 }

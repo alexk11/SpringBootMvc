@@ -17,23 +17,19 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
-    //private final UserDtoMapper userDtoMapper;
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<UserDto> getUser(@PathVariable long id) {
-        //var user = userDtoMapper.map(userDto);
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(id));
     }
 
     @PostMapping(path = "/add")
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
-        //var user = userDtoMapper.map(userDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userDto));
     }
 
     @PutMapping(path = "/update")
     public ResponseEntity<Long> updateUser(@Valid @RequestBody UserDto userDto) {
-        //var user = userDtoMapper.map(userDto);
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userDto));
     }
 

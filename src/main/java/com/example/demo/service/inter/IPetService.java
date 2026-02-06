@@ -5,9 +5,9 @@ import com.example.demo.model.PetDto;
 
 public interface IPetService {
 
-    PetDto getPet(Long id);
-
     PetDto createPet(PetDto dto);
+
+    PetDto getPet(Long id);
 
     Long updatePet(PetDto dto);
 

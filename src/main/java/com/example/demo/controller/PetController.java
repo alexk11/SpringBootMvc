@@ -18,25 +18,20 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/pets")
 public class PetController {
 
-    private final UserService userService;
     private final PetService petService;
-    //private final UserDtoMapper userDtoMapper;
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<PetDto> getUser(@PathVariable long id) {
-        //var user = userDtoMapper.map(userDto);
+    public ResponseEntity<PetDto> getPet(@PathVariable long id) {
         return ResponseEntity.status(HttpStatus.OK).body(petService.getPet(id));
     }
 
     @PostMapping(path = "/add")
-    public ResponseEntity<PetDto> createUser(@Valid @RequestBody PetDto petDto) {
-        //var user = userDtoMapper.map(userDto);
+    public ResponseEntity<PetDto> createPet(@Valid @RequestBody PetDto petDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(petService.createPet(petDto));
     }
 
     @PutMapping(path = "/update")
     public ResponseEntity<Long> updatePet(@Valid @RequestBody PetDto petDto) {
-        //var user = userDtoMapper.map(userDto);
         return ResponseEntity.status(HttpStatus.OK).body(petService.updatePet(petDto));
     }
 
