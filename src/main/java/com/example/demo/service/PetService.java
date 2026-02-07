@@ -35,7 +35,7 @@ public class PetService implements IPetService {
                                 .filter(u -> u.getId().compareTo(pet.getUserId()) == 0)
                                 .findFirst()
                                 .orElseThrow(() -> new ResourceNotFoundException(pet.getUserId(), "User not found", "Create pet"));
-        pet.setId((long) (this.getAllPets().size() + 1));
+        //pet.setId((long) (this.getAllPets().size() + 1));
         user.getPets().add(pet);
         return pet;
     }
@@ -59,7 +59,7 @@ public class PetService implements IPetService {
                 .findFirst()
                 .map(u -> u.getPets().add(foundPet))
                 .orElseThrow(() -> new ResourceNotFoundException(pet.getUserId(), "New pet owner not found", "Update pet"));
-        } else { // pet owner has not changed
+        } else {
             foundPet.setName(pet.getName());
             foundPet.setUserId(pet.getUserId());
         }
@@ -84,9 +84,7 @@ public class PetService implements IPetService {
         // iterate users and remove the pet
         this.userService.getUserMap()
             .values()
-            .forEach(user -> {
-                user.getPets().removeIf(pet -> id.compareTo(pet.getId()) == 0);
-            });
+            .forEach(user -> user.getPets().removeIf(pet -> id.compareTo(pet.getId()) == 0));
         return id;
     }
 
