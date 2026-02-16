@@ -23,7 +23,7 @@ public class PetServiceImpl implements PetService {
     public PetDto getPet(Long id) {
         return getAllPets()
                 .stream()
-                .filter(p -> (long)p.getId() == id)
+                .filter(p -> p.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException(id, "Pet not found", "Get pet"));
     }
