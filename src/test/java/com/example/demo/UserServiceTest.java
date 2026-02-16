@@ -1,7 +1,7 @@
 package com.example.demo;
 
 import com.example.demo.model.UserDto;
-import com.example.demo.service.UserService;
+import com.example.demo.service.impl.UserServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 class UserServiceTest {
 
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -68,7 +68,7 @@ class UserServiceTest {
                 35,
                 List.of());
 
-        this.userService.getUserMap().put(1L, userDto);
+        userService.getUserMap().put(1L, userDto);
 
         var jsonResponse = mockMvc.perform(get("/users/{id}", 1L))
                 .andDo(print())

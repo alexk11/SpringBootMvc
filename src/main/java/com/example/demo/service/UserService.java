@@ -1,61 +1,19 @@
 package com.example.demo.service;
 
-import com.example.demo.exception.BadRequestException;
-import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.UserDto;
-import com.example.demo.service.inter.IUserService;
-import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 
-@Service
-public class UserService implements IUserService {
+public interface UserService {
 
-    private final Map<Long, UserDto> userMap;
+    UserDto createUser(UserDto dto);
 
-    public UserService() {
-        this.userMap = new HashMap<>();
-    }
+    UserDto getUser(Long id);
 
-    @Override
-    public UserDto getUser(Long id) {
-        return Optional.ofNullable(this.userMap.get(id))
-                .orElseThrow(() -> new ResourceNotFoundException(id, "User not found", "Get user"));
-    }
+    UserDto updateUser(UserDto dto);
 
-    @Override
-    public UserDto createUser(UserDto dto) {
-        if (this.userMap.get(dto.getId()) != null) {
-            throw new BadRequestException(dto.getId(), "User already exists", "Create user");
-        }
-        this.userMap.put(dto.getId(), dto);
-        return dto;
-    }
+    Long deleteUser(Long id);
 
-    @Override
-    public UserDto updateUser(UserDto dto) {
-        UserDto user = Optional.ofNullable(this.userMap.get(dto.getId()))
-                .orElseThrow(() -> new ResourceNotFoundException(dto.getId(), "User not found", "Update user"));
-        user.setName(dto.getName());
-        user.setAge(dto.getAge());
-        user.setEmail(dto.getEmail());
-        user.setPets(dto.getPets());
-
-        return user;
-    }
-
-    @Override
-    public Long deleteUser(Long id) {
-        UserDto user = Optional.ofNullable(this.userMap.get(id))
-                .orElseThrow(() -> new ResourceNotFoundException(id, "User not found", "Delete user"));
-        return this.userMap.remove(user.getId()).getId();
-    }
-
-    public Map<Long, UserDto> getUserMap() {
-        return this.userMap;
-    }
-
+    Map<Long, UserDto> getUserMap();
 }

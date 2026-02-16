@@ -2,8 +2,8 @@ package com.example.demo;
 
 import com.example.demo.model.PetDto;
 import com.example.demo.model.UserDto;
-import com.example.demo.service.PetService;
-import com.example.demo.service.UserService;
+import com.example.demo.service.impl.PetServiceImpl;
+import com.example.demo.service.impl.UserServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,13 +24,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 @AutoConfigureMockMvc
 @SpringBootTest
-class PetServiceTest {
+class PetServiceImplTest {
 
     @Autowired
-    private PetService petService;
+    private PetServiceImpl petServiceImpl;
 
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -49,7 +49,7 @@ class PetServiceTest {
                 "Jack",
                 1L);
 
-        this.userService.getUserMap().put(1L, userDto);
+        userService.getUserMap().put(1L, userDto);
 
         String newPetJson = objectMapper.writeValueAsString(petDto);
 
@@ -66,7 +66,7 @@ class PetServiceTest {
         Assertions.assertEquals(petDto.getId(), petDtoResponse.getId());
         Assertions.assertEquals(petDto.getName(), petDtoResponse.getName());
         Assertions.assertEquals(petDto.getUserId(), petDtoResponse.getUserId());
-        Assertions.assertDoesNotThrow(() -> petService.getPet(petDtoResponse.getId()));
+        Assertions.assertDoesNotThrow(() -> petServiceImpl.getPet(petDtoResponse.getId()));
     }
 
     @Test
@@ -81,7 +81,7 @@ class PetServiceTest {
                 35,
                 List.of(petDto));
 
-        this.userService.getUserMap().put(1L, userDto);
+        userService.getUserMap().put(1L, userDto);
 
         var jsonResponse = mockMvc.perform(get("/pets/{id}", 1L))
                 .andDo(print())
@@ -95,7 +95,7 @@ class PetServiceTest {
         Assertions.assertEquals(petDto.getId(), petDtoResponse.getId());
         Assertions.assertEquals(petDto.getName(), petDtoResponse.getName());
         Assertions.assertEquals(petDto.getUserId(), petDtoResponse.getUserId());
-        Assertions.assertDoesNotThrow(() -> petService.getPet(petDtoResponse.getId()));
+        Assertions.assertDoesNotThrow(() -> petServiceImpl.getPet(petDtoResponse.getId()));
     }
 
 }
