@@ -33,7 +33,7 @@ class UserServiceTest {
 
     @Test
     public void shouldCreateNewUser() throws Exception {
-        var userDto = new UserDto(0L,
+        var userDto = new UserDto(1L,
                 "Pavel",
                 "test@example.com",
                 25,
@@ -41,7 +41,7 @@ class UserServiceTest {
 
         String newUserJson = objectMapper.writeValueAsString(userDto);
 
-        var jsonResponse = mockMvc.perform(post("/users/add")
+        var jsonResponse = mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newUserJson))
                 .andExpect(status().isCreated())
