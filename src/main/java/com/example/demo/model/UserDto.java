@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -16,16 +17,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class UserDto {
-    @NotNull
     private Long id;
-    @NotNull
+    @NotBlank(message = "Имя пользователя обязательно для заполнения")
     private String name;
-    @Email
+    @Email(message = "Некорректный формат email")
     private String email;
     @Positive
     private Integer age;
     @NotNull
     private List<PetDto> pets;
 }
-
-//public record UserDto(Long id, String name, String email, Integer age, List<PetDto> pets) {}

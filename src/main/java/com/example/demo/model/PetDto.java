@@ -1,6 +1,6 @@
 package com.example.demo.model;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,9 +13,8 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class PetDto {
-    @NotNull
     private Long id;
-    @NotNull
+    @NotBlank(message = "Имя питомца обязательно для заполнения")
     private String name;
     @Positive
     private Long userId;
