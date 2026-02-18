@@ -40,9 +40,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userDto));
     }
 
-    @ DeleteMapping("/{id}")
-    public ResponseEntity<Long> deleteUser(@PathVariable long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.deleteUser(id));
+    @DeleteMapping("/{id}")
+    public void deleteUser(@PathVariable long id) {
+        userService.deleteUser(id);
     }
 
 }
