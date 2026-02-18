@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.PetDto;
-import com.example.demo.service.impl.PetServiceImpl;
+import com.example.demo.service.PetService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,26 +23,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/pets")
 public class PetController {
 
-    private final PetServiceImpl petServiceImpl;
+    private final PetService petService;
 
     @GetMapping("/{id}")
     public ResponseEntity<PetDto> getPet(@PathVariable long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(petServiceImpl.getPet(id));
+        return ResponseEntity.status(HttpStatus.OK).body(petService.getPet(id));
     }
 
     @PostMapping
     public ResponseEntity<PetDto> createPet(@Valid @RequestBody PetDto petDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(petServiceImpl.createPet(petDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(petService.createPet(petDto));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Long> updatePet(@Valid @RequestBody PetDto petDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(petServiceImpl.updatePet(petDto));
+        return ResponseEntity.status(HttpStatus.OK).body(petService.updatePet(petDto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Long> deletePet(@PathVariable long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(petServiceImpl.deletePet(id));
+        return ResponseEntity.status(HttpStatus.OK).body(petService.deletePet(id));
     }
 
 }

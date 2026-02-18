@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.UserDto;
-import com.example.demo.service.impl.UserServiceImpl;
+import com.example.demo.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUser(@PathVariable long id) {
