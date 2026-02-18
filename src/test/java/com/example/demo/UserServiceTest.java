@@ -1,0 +1,90 @@
+package com.example.demo;
+
+import com.example.demo.model.UserDto;
+import com.example.demo.service.impl.UserServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+
+
+@AutoConfigureMockMvc
+@SpringBootTest
+class UserServiceTest {
+
+    @Autowired
+    private UserServiceImpl userService;
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Test
+    public void shouldCreateNewUser() throws Exception {
+        var userDto = new UserDto(1L,
+                "Pavel",
+                "test@example.com",
+                25,
+                List.of());
+
+        String newUserJson = objectMapper.writeValueAsString(userDto);
+
+        var jsonResponse = mockMvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newUserJson))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        var userDtoResponse = objectMapper.readValue(jsonResponse, UserDto.class);
+
+        Assertions.assertEquals(userDto.getId(), userDtoResponse.getId());
+        Assertions.assertEquals(userDto.getName(), userDtoResponse.getName());
+        Assertions.assertEquals(userDto.getAge(), userDtoResponse.getAge());
+        Assertions.assertEquals(userDto.getEmail(), userDtoResponse.getEmail());
+        Assertions.assertEquals(userDto.getPets(), userDtoResponse.getPets());
+        Assertions.assertDoesNotThrow(() -> userService.getUser(userDtoResponse.getId()));
+    }
+
+    @Test
+    public void shouldGetUserById() throws Exception {
+
+        var userDto = new UserDto(1L,
+                "Alex",
+                "test@example.com",
+                35,
+                List.of());
+
+        userService.getUserMap().put(1L, userDto);
+
+        var jsonResponse = mockMvc.perform(get("/users/{id}", 1L))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        var userDtoResponse = objectMapper.readValue(jsonResponse, UserDto.class);
+
+        Assertions.assertEquals(userDto.getId(), userDtoResponse.getId());
+        Assertions.assertEquals(userDto.getName(), userDtoResponse.getName());
+        Assertions.assertEquals(userDto.getAge(), userDtoResponse.getAge());
+        Assertions.assertEquals(userDto.getEmail(), userDtoResponse.getEmail());
+        Assertions.assertEquals(userDto.getPets(), userDtoResponse.getPets());
+        Assertions.assertDoesNotThrow(() -> userService.getUser(userDtoResponse.getId()));
+    }
+
+}
